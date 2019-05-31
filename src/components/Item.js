@@ -1,15 +1,19 @@
 import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import grey from '@material-ui/core/colors/grey';
-import blueGrey from '@material-ui/core/colors/blueGrey';
 import { makeStyles } from '@material-ui/core';
-import '../App.css';
 
 const useStyles = makeStyles(theme => ({
     root: {
         background: grey[800],
         padding: theme.spacing(3, 2),
     },
+    icon: {
+        width: '128px',    
+        height: '128px',
+        display: 'block',
+        margin: 'auto',
+    }
 }));
 
 const Item = props => {
@@ -19,7 +23,7 @@ const Item = props => {
     return (
         <a href={ href }>
             <Paper className={classes.root}>
-                <img className="icon" src={icon} alt={href}/>
+                <img className={classes.icon} src={icon} alt={href}/>
             </Paper>
         </a>
     );
