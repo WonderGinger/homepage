@@ -12,6 +12,9 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: blueGrey[900],
     height: '100vh',
   },
+  gutter: {
+    height: '15vh',
+  }
 }));
 
 const items = [
@@ -53,12 +56,13 @@ const App = () => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
+      <div className={classes.gutter}/>
       <Container fixed>
-        <Grid container justify="space-evenly" spacing={2}>
+        <Grid container alignItems="flex-end" justify="flex-start" spacing={2}>
           {
             items.map((item) => {
               return (
-                <Grid item xs={12} sm={6} md={4} lg={3}>
+                <Grid key={item.href} item xs={12} sm={6} md={4} lg={3}>
                   <Item icon={item.icon} href={item.href}/>
                 </Grid>
               );
