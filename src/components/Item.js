@@ -31,7 +31,6 @@ const Item = ({ href, icon }) => {
         e.target.style.background = styles.item.onHover.background;
     }
     const handleMouseLeave = (e) => {
-        console.log("leave")
         if(e.target.localName === "img") return;
         e.target.style.background = styles.item.background;
     }
