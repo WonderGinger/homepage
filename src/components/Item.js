@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
     root: {
-        background: grey[800],
         padding: theme.spacing(3, 2),
     },
     icon: {
@@ -16,16 +15,34 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const Item = props => {
-    const href = props.href;
-    const icon = props.icon;
+let styles = {
+    item: {
+        background: grey[800],
+        onHover: {
+            background: grey[700]
+        }
+    }
+}
+
+const Item = ({ href, icon }) => {
     const classes = useStyles();
+    const handleMouseEnter = (e) => {
+        if(e.target.localName === "img") return;
+        e.target.style.background = styles.item.onHover.background;
+    }
+    const handleMouseLeave = (e) => {
+        console.log("leave")
+        if(e.target.localName === "img") return;
+        e.target.style.background = styles.item.background;
+    }
     return (
-        <a href={ href }>
-            <Paper className={classes.root}>
-                <img className={classes.icon} src={icon} alt={href}/>
-            </Paper>
-        </a>
+        <div onMouseEnter={e => handleMouseEnter(e)} onMouseLeave={e => handleMouseLeave(e)}>
+            <a href={ href }>
+                <Paper style={styles.item} className={classes.root} >
+                    <img className={classes.icon} src={icon} alt={href}/>
+                </Paper>
+            </a>
+        </div>
     );
 }
 
