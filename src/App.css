@@ -16,3 +16,7 @@ div .item {
 .App {
   height: 100vh
 }
+
+.hoverable:hover {
+  background: white;
+}

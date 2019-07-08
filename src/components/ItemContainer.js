@@ -1,64 +1,92 @@
 import React, { Component } from 'react'
 import { Grid, Container } from '@material-ui/core/';
+import hardtack from 'hardtack';
 import Item from './Item';
+import BookmarkAddButton from './BookmarkAddButton';
+import items from '../bookmarks.json';
 
 export default class ItemContainer extends Component {
-    constructor(props) {
-      super(props)
-      this.state = {
-        items: [
-          {
-            icon: 'https://cdn2.iconfinder.com/data/icons/minimalism/128/twitter.png',
-            href: 'https://www.twitter.com',
-          },
-          {
-            icon: 'https://www.tokbox.com/blog/wp-content/uploads/2016/04/Facebook_logo_36x36.svg_.png',
-            href: 'https://facebook.com',
-          },
-          {
-            icon: "https://www.androidpolice.com/wp-content/uploads/2016/10/nexus2cee_ic_launcher-1.png",
-            href: "https://messages.android.com/",
-          },
-          {
-            icon: 'http://icons.iconarchive.com/icons/dakirby309/simply-styled/128/YouTube-icon.png',
-            href: 'https://www.youtube.com/feed/subscriptions',
-          },
-          {
-            icon: 'http://www.iconninja.com/files/830/856/929/logo-brand-social-network-twitch-icon.png',
-            href: 'https://www.twitch.tv/',
-          },
-          {
-            icon: 'http://icons.iconarchive.com/icons/uiconstock/socialmedia/128/Reddit-icon.png',
-            href: 'https://www.reddit.com/',
-          },
-          {
-            icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Gmail_Icon.svg/512px-Gmail_Icon.svg.png',
-            href: 'https://mail.google.com',
-          },
-          {
-            icon: 'http://icons.iconarchive.com/icons/marcus-roberto/google-play/128/Google-Drive-icon.png',
-            href: 'https://drive.google.com',
-          },
-        ]
-      }
+  constructor(props) {
+    super(props);
+    this.state = {
+      items: [...items.bookmarks]
     }
-    render() {
-        return (
-          <div>      
-            <Container fixed>
-              <Grid container alignItems="flex-end" justify="flex-start" spacing={2}>
-                {this.state.items.map((item, itemIndex) => (
-                  <Grid key={itemIndex} item xs={12} sm={6} md={4} lg={3}>
-                    <Item
-                      itemIndex={itemIndex}
-                      icon={item.icon} 
-                      href={item.href}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-            </Container>
-          </div>
-        )
+  }
+
+  componentDidMount() {
+    const items = getBookmarkCookie();
+    if (items) {
+      this.setState({ items: items });
     }
+  }
+  
+  handleAddBookmark = (href, icon) => {
+    if (!validURL(href)) return;
+    // if (!validURL(icon)) icon = 'https://cdn2.iconfinder.com/data/icons/designer-skills/128/react-512.png';
+    if(!validURL(icon)) icon = `https://www.google.com/s2/favicons?domain=${href}`;
+    const newItems = [...this.state.items, {
+      href,
+      icon
+    }]
+    this.setState({
+      items: newItems
+    });
+    setBookmarkCookie(newItems);
+  }
+
+  handleDelete = (i) => {
+    const newItems = this.state.items.slice()
+    newItems.splice(i, 1)
+    this.setState({
+      items: newItems
+    })
+    setBookmarkCookie(newItems);
+  }
+
+  render() {
+    return (
+      <Container fixed>
+        <Grid container alignItems="flex-end" justify="flex-start" spacing={2}>
+
+          {this.state.items.map((item, itemIndex) => (
+            <Grid key={itemIndex} item xs={12} sm={6} md={4} lg={3}>
+              <Item
+                itemIndex={itemIndex}
+                icon={item.icon} 
+                href={item.href}
+                onDelete={() =>this.handleDelete(itemIndex)}
+              />
+            </Grid>
+          ))}
+
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <BookmarkAddButton onClick={(href, icon) => this.handleAddBookmark(href, icon)}/>
+          </Grid>
+
+        </Grid>
+      </Container>
+    )
+  }
+}
+
+const setBookmarkCookie = items => {
+  hardtack.set('bookmarks', items.map(item => JSON.stringify(item)), {
+    maxAge: '60*60*25*365'
+  });
+}
+
+const getBookmarkCookie = () => {
+  const items = hardtack.get('bookmarks');
+  if (!items) return;
+  return items.split(/,(?={)/).map(item => JSON.parse(item))
+}
+
+const validURL = str  => {
+  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return !!pattern.test(str);
 }
